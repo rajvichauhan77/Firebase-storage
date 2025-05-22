@@ -28,10 +28,12 @@ const Input = () => {
     }
 
     useEffect(() => {
-        getDocs(collection(db,"User"))
-        .then((res) => res.docs.map(doc => doc.data()))
-        .then((res) => console.log(res))
+          getDoc(doc(db,"User", uuidv4(), input))
+        // getDocs(collection(db,"User"))
+        // .then((res) => res.docs.map(doc => doc.data()))
+        // .then((res) => console.log(res))
     }, [input])
+    
 
     return (
         <div className="mt-15 p-5">
@@ -58,7 +60,7 @@ const Input = () => {
                         Your password
                     </label>
                     <input
-                        type="password"
+                        // type="password"
                         id="password"
                         name="password"
                         onChange={(e)=>handleInput(e)} 
