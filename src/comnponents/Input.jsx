@@ -7,33 +7,61 @@ import { v4 as uuidv4 } from "uuid";
 const Input = () => {
 
     const [input, setInput] = useState({email:"", password:""})
+    const [successMessage, setSuccessMessage] = useState("");
+
+
 
     function handleInput(e){
         const {name,value} = e.target
         setInput({...input, [name]:value})
     }
 
-    async function handleSubmit() {
+    // async function handleSubmit() {
         
+    //     try {
+    //         const res = await setDoc(doc(db,"User", uuidv4(), input))
+    //         console.log(input)
+    //          const data = await res.data();
+    //         console.log(data)
+
+    //     } catch (error) {
+    //          console.log(error.code)
+    //          console.log(error.message)
+    //     }
+    // }
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();  // prevent default form behavior
+
         try {
-            const res = await setDoc(doc(db,"User", uuidv4(), input))
-            console.log(input)
-             const data = await res.data();
-            console.log(data)
-
+            const newUserRef = doc(db, "User", uuidv4()); 
+            await setDoc(newUserRef, input); 
+            console.log("User saved:", input);
+             setSuccessMessage("Data is stored in Firebase successfully!");
+              setInput({ email: "", password: "" });
+               setTimeout(() => setSuccessMessage(""), 3000);
         } catch (error) {
-             console.log(error.code)
-             console.log(error.message)
+            console.error("Save error:", error.code, error.message);
         }
-    }
+    };
 
-    useEffect(() => {
-          getDoc(doc(db,"User", uuidv4(), input))
-        // getDocs(collection(db,"User"))
-        // .then((res) => res.docs.map(doc => doc.data()))
-        // .then((res) => console.log(res))
-    }, [input])
+
+    // useEffect(() => {
+    //       getDoc(doc(db,"User", uuidv4(), input))
+    //     getDocs(collection(db,"User"))
+    //     .then((res) => res.docs.map(doc => doc.data()))
+    //     .then((res) => console.log(res))
+    // }, [input])
     
+    useEffect(() => {
+ 
+    getDocs(collection(db, "User"))
+        .then((snapshot) => snapshot.docs.map((doc) => doc.data()))
+        .then((data) => console.log("Fetched users:", data))
+        .catch((error) => console.error("Fetch error:", error));
+    }, []);
+
 
     return (
         <div className="mt-15 p-5">
@@ -82,6 +110,12 @@ const Input = () => {
                 >
                     Submit
                 </button>
+
+                {successMessage && (
+                    <p className="text-green-600 mt-3 text-lg font-semibold">
+                    {successMessage}
+                    </p>
+                )}
             </form>
         </div>
     );
